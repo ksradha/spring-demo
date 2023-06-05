@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ImageRepository extends JpaRepository<Image,Integer> {
+public interface ImageRepository extends JpaRepository<Image, Integer> {
 
-    Optional<Image> findByNameAndUserId(String fileName, String userId);
+	Optional<Image> findByImageNameAndUserName(String fileName, String userName);
 }
-

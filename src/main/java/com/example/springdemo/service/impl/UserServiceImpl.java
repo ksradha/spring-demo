@@ -5,6 +5,7 @@ import com.example.springdemo.dao.UserRepository;
 import com.example.springdemo.dto.LoginDTO;
 import com.example.springdemo.dto.LoginResposne;
 import com.example.springdemo.dto.UserDTO;
+import com.example.springdemo.exception.ImageException;
 import com.example.springdemo.model.Image;
 import com.example.springdemo.model.User;
 import com.example.springdemo.service.UserService;
@@ -12,11 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
 
+@Service
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -32,10 +35,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public String saveUserInfo(UserDTO userdto) {
 
+    	String encodedPassword=this.pwdEncoder.encode(userdto.getPassword());
+    	//logger.info("encoded password is :  "+encodedPassword);
         User user = new User(
           userdto.getUserId(),
           userdto.getUserName(),
-          this.pwdEncoder.encode(userdto.getPassword())
+          encodedPassword
         );
         userRepository.save(user);
         return "User"+user.getUserName()+" saved successfully..";
@@ -45,15 +50,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResposne loginUser(LoginDTO loginDTO) {
         User user1 = userRepository.findByUserName(loginDTO.getUserName());
+        logger.info("user info : "+user1);
         if(user1!=null){
             String password = loginDTO.getPassword();
             String encodedPassword = user1.getPassword();
             Boolean isPwdCorrect = pwdEncoder.matches(password,encodedPassword);
+            logger.info("isPwdCorrect : "+isPwdCorrect);
             if(isPwdCorrect){
                 Optional<User> user = userRepository.findByUserNameAndPassword(loginDTO.getUserName(),encodedPassword);
-                if(user.isPresent())
+                if(user.isPresent()) {
+                	logger.info("user is present in db... :)");
                     return new LoginResposne("Login Success", true);
-                else{
+                }else{
                     return new LoginResposne("Login Failed",false);
                 }
             }else{
@@ -99,14 +107,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public byte[] viewImage(String userId, String fileName) throws Exception {
+	public byte[] viewImage(String userName, String fileName) throws Exception {
         try {
-            if (isUserPresent(userId)) {
-                Optional<Image> imageData = imageRepository.findByNameAndUserId(fileName, userId);
+            if (isUserPresent(userName)) {
+                Optional<Image> imageData = imageRepository.findByImageNameAndUserName(fileName, userName);
                 return imageData.get().getImageData();
             }
         }catch (Exception e){
-            throw new Exception("Image not found");
+            throw new ImageException("Image not found");
         }
         return null;
     }

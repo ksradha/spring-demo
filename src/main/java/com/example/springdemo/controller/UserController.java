@@ -7,8 +7,8 @@ import com.example.springdemo.dto.UserDTO;
 import com.example.springdemo.model.Image;
 import com.example.springdemo.model.User;
 import com.example.springdemo.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+/*import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;*/
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@Api(value = "CRUD Rest APIs for User")
+//@Api(value = "CRUD Rest APIs for User")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -30,10 +30,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
     private ImgurConstants imgurConstants;
 
-    @ApiOperation(value = "Save user Info")
+    //@ApiOperation(value = "Save user Info")
     @PostMapping("/save")
     public String saveUser(@RequestBody UserDTO userdto){
         logger.info("User details: "+userdto);
@@ -45,13 +44,15 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @PostMapping("/login")
+    @PostMapping(value="/login",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO){
+    	logger.info("User details: "+loginDTO);
         LoginResposne loginResponse = userService.loginUser(loginDTO);
+        logger.info("response: "+loginResponse);
         return ResponseEntity.ok(loginResponse);
     }
 
-    @PostMapping("/{userId}/uploadImage")
+    @PostMapping("/{userName}/uploadImage")
     public String uploadImage(@RequestParam("image") MultipartFile file, @PathVariable String userName) throws IOException {
         return userService.uploadImage(file,userName);
     }
@@ -66,7 +67,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/gif")).body(imageData);
     }
 
-    @ApiOperation(value = "Delete Image")
+    //@ApiOperation(value = "Delete Image")
     @DeleteMapping("/{userName}/{imageId}")
     public ResponseEntity<String> deletePost(@PathVariable String userName, @PathVariable Integer imageId){
         String uri = imgurConstants.URI+userName+"/image/"+imageId;
