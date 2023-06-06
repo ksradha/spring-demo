@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserDTO {
-    private int userId;
-    private String userName;
-    private String password;
-    
+	private int userId;
+	private String userName;
+	private String password;
+
 	public int getUserId() {
 		return userId;
 	}
@@ -29,13 +29,13 @@ public class UserDTO {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "UserDTO [userId=" + userId + ", userName=" + userName + ", password=" + password + "]";
 	}
-	
-	
-    
-    
+
+
+
+
 }

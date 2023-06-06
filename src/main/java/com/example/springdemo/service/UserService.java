@@ -10,15 +10,15 @@ import java.io.IOException;
 
 public interface UserService {
 
-    String saveUserInfo(UserDTO userdto);
+	String saveUserInfo(UserDTO userdto);
 
-    LoginResposne loginUser(LoginDTO loginDTO);
+	LoginResposne loginUser(LoginDTO loginDTO);
 
-    User getUserById(String userId);
+	User getUserById(String userId);
 
-    User getUserByName(String userName);
+	User getUserByName(String userName);
 
-    String uploadImage(MultipartFile file, String userName) throws IOException;
+	String uploadImage(MultipartFile file, String userName) throws IOException;
 
-    byte[] viewImage(String userName, String fileName) throws Exception;
+	byte[] viewImage(String userName, String fileName) throws Exception;
 }

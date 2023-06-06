@@ -25,58 +25,58 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    private ImgurConstants imgurConstants;
+	private ImgurConstants imgurConstants;
 
-    //@ApiOperation(value = "Save user Info")
-    @PostMapping("/save")
-    public String saveUser(@RequestBody UserDTO userdto){
-        logger.info("User details: "+userdto);
-        return userService.saveUserInfo(userdto);
-    }
+	//@ApiOperation(value = "Save user Info")
+	@PostMapping("/save")
+	public String saveUser(@RequestBody UserDTO userdto){
+		logger.info("User details: "+userdto);
+		return userService.saveUserInfo(userdto);
+	}
 
-    @GetMapping("/{userId}")
-    public User getUser(@PathVariable String userId){
-        return userService.getUserById(userId);
-    }
+	@GetMapping("/{userId}")
+	public User getUser(@PathVariable String userId){
+		return userService.getUserById(userId);
+	}
 
-    @PostMapping(value="/login",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO){
-    	logger.info("User details: "+loginDTO);
-        LoginResposne loginResponse = userService.loginUser(loginDTO);
-        logger.info("response: "+loginResponse);
-        return ResponseEntity.ok(loginResponse);
-    }
+	@PostMapping(value="/login",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO){
+		logger.info("User details: "+loginDTO);
+		LoginResposne loginResponse = userService.loginUser(loginDTO);
+		logger.info("response: "+loginResponse);
+		return ResponseEntity.ok(loginResponse);
+	}
 
-    @PostMapping("/{userName}/uploadImage")
-    public String uploadImage(@RequestParam("image") MultipartFile file, @PathVariable String userName) throws IOException {
-        return userService.uploadImage(file,userName);
-    }
+	@PostMapping("/{userName}/uploadImage")
+	public String uploadImage(@RequestParam("image") MultipartFile file, @PathVariable String userName) throws IOException {
+		return userService.uploadImage(file,userName);
+	}
 
-    @GetMapping("/{userName}/viewImage/{imageId}")
-    public ResponseEntity<byte[]> downloadImage(@PathVariable String userName, @PathVariable Integer imageId) throws Exception {
-        String uri = imgurConstants.URI+userName+"/image/"+imageId;
-        RestTemplate restTemplate = new RestTemplate();
+	@GetMapping("/{userName}/viewImage/{imageId}")
+	public ResponseEntity<byte[]> downloadImage(@PathVariable String userName, @PathVariable Integer imageId) throws Exception {
+		String uri = imgurConstants.URI+userName+"/image/"+imageId;
+		RestTemplate restTemplate = new RestTemplate();
 
-        Image image = restTemplate.getForObject(uri,Image.class);
-        byte[] imageData= image.getImageData();
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/gif")).body(imageData);
-    }
+		Image image = restTemplate.getForObject(uri,Image.class);
+		byte[] imageData= image.getImageData();
+		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/gif")).body(imageData);
+	}
 
-    //@ApiOperation(value = "Delete Image")
-    @DeleteMapping("/{userName}/{imageId}")
-    public ResponseEntity<String> deletePost(@PathVariable String userName, @PathVariable Integer imageId){
-        String uri = imgurConstants.URI+userName+"/image/"+imageId;
-        Image image = new Image();
-        image.setImageId(imageId);
-        image.setUserName(userName);
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(uri, image);
-        return new ResponseEntity<>("Image deleted successfully.", HttpStatus.OK);
-    }
+	//@ApiOperation(value = "Delete Image")
+	@DeleteMapping("/{userName}/{imageId}")
+	public ResponseEntity<String> deletePost(@PathVariable String userName, @PathVariable Integer imageId){
+		String uri = imgurConstants.URI+userName+"/image/"+imageId;
+		Image image = new Image();
+		image.setImageId(imageId);
+		image.setUserName(userName);
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.delete(uri, image);
+		return new ResponseEntity<>("Image deleted successfully.", HttpStatus.OK);
+	}
 
 }

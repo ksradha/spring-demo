@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 public class User {
 
 	@Id
-    @GeneratedValue
-    @Column(name="user_id")
-    private int userId;
-    @Column(name="user_name")
-    //@NotNull(message = "Name cannot be null")
+	@GeneratedValue
+	@Column(name="user_id")
+	private int userId;
+	@Column(name="user_name")
+	//@NotNull(message = "Name cannot be null")
 	private String userName;
-    @Column(name="password")
+	@Column(name="password")
 	private String password;
-    
+
 	public int getUserId() {
 		return this.userId;
 	}
@@ -55,11 +55,11 @@ public class User {
 	public String toString() {
 		return "User [userId=" + userId + ", userName=" + userName + ", password=" + password + "]";
 	}
-	
-	
-	
-	
-	
 
-    
+
+
+
+
+
+
 }
