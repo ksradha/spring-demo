@@ -1,5 +1,7 @@
 package com.example.springdemo.dto;
 
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,9 @@ public class LoginResposne {
 	}
 	public LoginResposne() {
 		super();
+	}
+	public LoginResposne(Map<String, Object> data, boolean status2) {
+		// TODO Auto-generated constructor stub
 	}
 
 

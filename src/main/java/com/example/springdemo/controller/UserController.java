@@ -1,5 +1,6 @@
 package com.example.springdemo.controller;
 
+import com.example.springdemo.config.JwtUtil;
 import com.example.springdemo.constants.ImgurConstants;
 import com.example.springdemo.dto.LoginDTO;
 import com.example.springdemo.dto.LoginResposne;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 //@Api(value = "CRUD Rest APIs for User")
 @RestController
 @RequestMapping("/user")
@@ -29,6 +28,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	private ImgurConstants imgurConstants;
 
@@ -53,23 +55,40 @@ public class UserController {
 	}
 
 	@PostMapping("/{userName}/uploadImage")
-	public String uploadImage(@RequestParam("image") MultipartFile file, @PathVariable String userName) throws IOException {
+	public String uploadImage(@RequestHeader(value ="authorization",defaultValue="") String auth ,@RequestParam("image") MultipartFile file, @PathVariable String userName) throws Exception {
+
+		String usernameFromToken = jwtUtil.getUserNameFromToken(auth);
+		if(null!=usernameFromToken) {
+			jwtUtil.verifyJwt(auth);
 		return userService.uploadImage(file,userName);
+		}
+		return null;
 	}
 
 	@GetMapping("/{userName}/viewImage/{imageId}")
-	public ResponseEntity<byte[]> downloadImage(@PathVariable String userName, @PathVariable Integer imageId) throws Exception {
+	public ResponseEntity<byte[]> downloadImage(@RequestHeader(value ="authorization",defaultValue="") String auth ,@PathVariable String userName, @PathVariable Integer imageId) throws Exception {
+		
+		String usernameFromToken = jwtUtil.getUserNameFromToken(auth);
+		if(null!=usernameFromToken) {
+			jwtUtil.verifyJwt(auth);
 		String uri = imgurConstants.URI+userName+"/image/"+imageId;
 		RestTemplate restTemplate = new RestTemplate();
 
 		Image image = restTemplate.getForObject(uri,Image.class);
 		byte[] imageData= image.getImageData();
 		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/gif")).body(imageData);
+		}
+		return new ResponseEntity<byte[]>(HttpStatus.OK);
 	}
 
 	//@ApiOperation(value = "Delete Image")
 	@DeleteMapping("/{userName}/{imageId}")
-	public ResponseEntity<String> deletePost(@PathVariable String userName, @PathVariable Integer imageId){
+	public ResponseEntity<String> deletePost(@RequestHeader(value ="authorization",defaultValue="") String auth ,@PathVariable String userName, @PathVariable Integer imageId) throws Exception{
+		
+		
+		String usernameFromToken = jwtUtil.getUserNameFromToken(auth);
+		if(null!=usernameFromToken) {
+			jwtUtil.verifyJwt(auth);
 		String uri = imgurConstants.URI+userName+"/image/"+imageId;
 		Image image = new Image();
 		image.setImageId(imageId);
@@ -77,6 +96,8 @@ public class UserController {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.delete(uri, image);
 		return new ResponseEntity<>("Image deleted successfully.", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Error while deleting..",HttpStatus.OK);
 	}
 
 }
